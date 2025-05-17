@@ -1,16 +1,16 @@
 name: dia-tts
 channels:
-  - conda-forge
+  - conda-forge          # all conda packages come from here
 dependencies:
-  # ── core interpreter ─────────────────────────────────────────
-  - python=3.11
-  - pip                        # enables the pip: section
+  # ── interpreter ─────────────────────────────────────────────
+  - python=3.10
+  - pip
 
-  # ── conda-available runtime libs ────────────────────────────
+  # ── runtime libraries (conda) ───────────────────────────────
   - numpy>=2.2.4
   - pydantic>=2.11.3
   - safetensors>=0.5.3
-  - pysoundfile>=0.13.1
+  - pysoundfile>=0.13.1          # pulls libsndfile
   - huggingface_hub>=0.30.2
   - polars
   - transformers
@@ -19,21 +19,23 @@ dependencies:
   - ninja>=1.11.1.4
   - packaging>=25.0
 
-  # ── pip-only packages (GPU stack + extras) ──────────────────
+  # ── pip-only packages (GPU + extras) ────────────────────────
   - pip:
-      # --- CUDA 11.8 PyTorch stack ------------------------------------------
+      # ─── CUDA-11.8 PyTorch stack (official wheels) ──────────
       - --extra-index-url https://download.pytorch.org/whl/cu118
       - torch==2.6.0+cu118
       - torchaudio==2.6.0+cu118
 
-      # --- ready-made Flash-Attention wheel (cu118) -------------------------
-      - flash-attn==2.7.4.post1+cu118
+      # ─── FlashAttention wheel for cp310/cu118 ───────────────
+      - flash-attn==2.7.4.post1            # wheel → no NVCC needed
 
-      # --- rest of Dia’s deps ----------------------------------------------
+      # ─── Dia-specific / misc libraries ──────────────────────
       - gradio>=5.25.2
       - descript-audio-codec>=1.0.0
       - ffcv
       - ctc-forced-aligner
       - cut-cross-entropy
+
+      # ─── Triton GPU kernel libraries ────────────────────────
       - "triton==3.2.0; sys_platform == 'linux'"
       - "triton-windows==3.2.0.post18; sys_platform == 'win32'"
