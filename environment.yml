@@ -1,41 +1,26 @@
+# environment.yml  – final, no source build
 name: dia-tts
 channels:
-  - conda-forge          # all conda packages come from here
+  - conda-forge
 dependencies:
-  # ── interpreter ─────────────────────────────────────────────
   - python=3.10
   - pip
+  # … same conda packages as before …
 
-  # ── runtime libraries (conda) ───────────────────────────────
-  - numpy>=2.2.4
-  - pydantic>=2.11.3
-  - safetensors>=0.5.3
-  - pysoundfile>=0.13.1          # pulls libsndfile
-  - huggingface_hub>=0.30.2
-  - polars
-  - transformers
-  - peft
-  - wandb
-  - ninja>=1.11.1.4
-  - packaging>=25.0
-
-  # ── pip-only packages (GPU + extras) ────────────────────────
   - pip:
-      # ─── CUDA-11.8 PyTorch stack (official wheels) ──────────
+      # pull PyTorch & Torchaudio cu118 wheels
       - --extra-index-url https://download.pytorch.org/whl/cu118
       - torch==2.6.0+cu118
       - torchaudio==2.6.0+cu118
 
-      # ─── FlashAttention wheel for cp310/cu118 ───────────────
-      - flash-attn==2.7.4.post1            # wheel → no NVCC needed
+      # 👉 *only* wheel version that exists for cp310/cu118
+      - flash-attn==2.5.2.post1+cu118
 
-      # ─── Dia-specific / misc libraries ──────────────────────
+      # rest of your pip-only packages
       - gradio>=5.25.2
       - descript-audio-codec>=1.0.0
       - ffcv
       - ctc-forced-aligner
       - cut-cross-entropy
-
-      # ─── Triton GPU kernel libraries ────────────────────────
       - "triton==3.2.0; sys_platform == 'linux'"
       - "triton-windows==3.2.0.post18; sys_platform == 'win32'"
