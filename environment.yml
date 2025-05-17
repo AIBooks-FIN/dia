@@ -1,31 +1,43 @@
 name: dia-tts
 channels:
-  - pytorch
-  - nvidia
-  - conda-forge
+  - conda-forge       # one channel is enough for the conda-available packages
 dependencies:
+  # ── core interpreter ─────────────────────────────────────────
   - python=3.11
-  - pytorch=2.6.0
-  - torchaudio=2.6.0
-  - pytorch-cuda=12.6  # [linux] CUDA 12.6 support (GPU)
+  - pip               # enables the pip section below
+
+  # ── conda-available runtime libs ────────────────────────────
   - numpy>=2.2.4
   - pydantic>=2.11.3
   - safetensors>=0.5.3
-  - pysoundfile>=0.13.1    # SoundFile for audio I/O (libsndfile)
+  - pysoundfile>=0.13.1          # pulls libsndfile via conda
   - huggingface_hub>=0.30.2
-  - gradio>=5.25.2
+  - polars                       # dataframe engine
+  - transformers                 # HF Transformers
+  - peft                         # parameter-efficient finetuning
+  - wandb                        # Weights & Biases logging
+
+  # ── build / dev helpers ──────────────────────────────────────
   - ninja>=1.11.1.4
   - packaging>=25.0
-  - polars        # DataFrame library
-  - transformers  # Hugging Face Transformers
-  - peft          # Parameter-Efficient Fine-Tuning
-  - wandb         # Weights & Biases logging
-  - pip           # Include pip to install packages not on conda
+
+  # ── pip-only packages (incl. CUDA 12.6 PyTorch stack) ───────
   - pip:
+      # --- GPU stack --------------------------------------------------------
+      - --extra-index-url https://download.pytorch.org/whl/cu126
+      - torch==2.6.0+cu126
+      - torchaudio==2.6.0+cu126
+
+      # --- web UI -----------------------------------------------------------
+      - gradio>=5.25.2
+
+      # --- Dia-specific / performance libs ----------------------------------
       - descript-audio-codec>=1.0.0
-      - flash-attn              # FlashAttention (optimized attention)
-      - ffcv                    # Fast loader library
-      - ctc-forced-aligner      # CTC Forced Alignment tool
-      - cut-cross-entropy       # Memory-efficient cross-entropy loss
+      - flash-attn                    # FlashAttention
+      - ffcv                          # Fast data loader
+      - ctc-forced-aligner            # Forced alignment
+      - cut-cross-entropy             # Memory-efficient CE loss
+
+      # --- Triton GPU kernels (Linux vs. Windows) ---------------------------
       - "triton==3.2.0; sys_platform == 'linux'"
       - "triton-windows==3.2.0.post18; sys_platform == 'win32'"
